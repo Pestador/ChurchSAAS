@@ -22,5 +22,9 @@ Plan:
 - [X] Initialize Git repository
 - [X] Create .gitignore file with common patterns
 - [X] Set up Git user identity (email and name)
-- [ ] Make initial commit
-- [ ] Verify repository status
+- [X] Make initial commit
+- [X] Verify repository status
+
+✅ Git has been successfully added to the project. The repository is initialized with an appropriate .gitignore file and all initial files have been committed. Git identity has been set up locally for this repository as:
+- Name: Pestador
+- Email: Organikkemsal@gmail.com
