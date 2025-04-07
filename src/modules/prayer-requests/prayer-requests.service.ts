@@ -1,16 +1,23 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PrayerRequest, PrayerRequestStatus, PrayerRequestVisibility } from '../../entities/prayer-request.entity';
+import { Church } from '../../entities/church.entity';
+import { CreatePrayerRequestDto } from './dto/create-prayer-request.dto';
+import { UpdatePrayerRequestDto } from './dto/update-prayer-request.dto';
 
 @Injectable()
 export class PrayerRequestsService {
+  private readonly logger = new Logger(PrayerRequestsService.name);
+  
   constructor(
     @InjectRepository(PrayerRequest)
     private prayerRequestRepository: Repository<PrayerRequest>,
+    @InjectRepository(Church)
+    private churchesRepository: Repository<Church>,
   ) {}
 
-  async findAll(churchId: string, userId?: string, visibility?: PrayerRequestVisibility): Promise<PrayerRequest[]> {
+  async findAll(churchId: string, userId: string, userRole: string, status?: string, visibility?: string): Promise<PrayerRequest[]> {
     // Base query conditions
     const queryConditions: any = { churchId };
     
@@ -39,7 +46,7 @@ export class PrayerRequestsService {
     });
   }
 
-  async findOne(id: string, churchId: string, userId?: string): Promise<PrayerRequest> {
+  async findOne(id: string, churchId: string, userId: string, userRole: string): Promise<PrayerRequest> {
     // Find the prayer request
     const prayerRequest = await this.prayerRequestRepository.findOne({
       where: { id, churchId },
@@ -64,7 +71,7 @@ export class PrayerRequestsService {
     return prayerRequest;
   }
 
-  async create(createPrayerRequestDto: any, userId: string, churchId: string): Promise<PrayerRequest> {
+  async create(createPrayerRequestDto: CreatePrayerRequestDto, userId: string, churchId: string): Promise<PrayerRequest> {
     const newPrayerRequest = this.prayerRequestRepository.create({
       ...createPrayerRequestDto,
       userId,
@@ -74,9 +81,9 @@ export class PrayerRequestsService {
     return this.prayerRequestRepository.save(newPrayerRequest);
   }
 
-  async update(id: string, updatePrayerRequestDto: any, churchId: string, userId: string): Promise<PrayerRequest> {
+  async update(id: string, updatePrayerRequestDto: UpdatePrayerRequestDto, userId: string, churchId: string): Promise<PrayerRequest> {
     // Check if prayer request exists and is accessible by the user
-    const prayerRequest = await this.findOne(id, churchId);
+    const prayerRequest = await this.findOne(id, churchId, userId, 'user');
     
     // Only the author should be able to update their prayer request
     // Admin users (checked in the controller) can update any
@@ -86,12 +93,12 @@ export class PrayerRequestsService {
     
     // Update prayer request
     await this.prayerRequestRepository.update({ id, churchId }, updatePrayerRequestDto);
-    return this.findOne(id, churchId);
+    return this.findOne(id, churchId, userId, 'user');
   }
 
   async updateStatus(id: string, status: PrayerRequestStatus, churchId: string): Promise<PrayerRequest> {
     // Check if prayer request exists
-    const prayerRequest = await this.findOne(id, churchId);
+    const prayerRequest = await this.findOne(id, churchId, 'system', 'admin');
     
     // Update status
     prayerRequest.status = status;
@@ -101,7 +108,7 @@ export class PrayerRequestsService {
 
   async incrementPrayerCount(id: string, churchId: string): Promise<PrayerRequest> {
     // Check if prayer request exists
-    const prayerRequest = await this.findOne(id, churchId);
+    const prayerRequest = await this.findOne(id, churchId, 'system', 'user');
     
     // Increment prayer count
     prayerRequest.prayerCount += 1;
@@ -114,7 +121,7 @@ export class PrayerRequestsService {
     // In a real implementation, this would call the OpenAI API
     
     // Find the prayer request
-    const prayerRequest = await this.findOne(id, churchId);
+    const prayerRequest = await this.findOne(id, churchId, 'system', 'admin');
     
     // Generate AI response
     prayerRequest.aiResponse = 'This is an AI-generated response to your prayer request. Content will be replaced with actual AI-generated text.';
@@ -125,9 +132,21 @@ export class PrayerRequestsService {
     return this.prayerRequestRepository.save(prayerRequest);
   }
 
-  async remove(id: string, churchId: string, userId: string): Promise<void> {
+  async getChurchWithSubscription(churchId: string): Promise<Church> {
+    this.logger.log(`Getting church with subscription for church ID ${churchId}`);
+    
+    const church = await this.churchesRepository.findOne({ where: { id: churchId } });
+    
+    if (!church) {
+      throw new NotFoundException(`Church with ID ${churchId} not found`);
+    }
+    
+    return church;
+  }
+
+  async remove(id: string, userId: string, churchId: string): Promise<void> {
     // Check if prayer request exists and is accessible by the user
-    const prayerRequest = await this.findOne(id, churchId);
+    const prayerRequest = await this.findOne(id, churchId, userId, 'user');
     
     // Only the author should be able to delete their prayer request
     // Admin users (checked in the controller) can delete any
