@@ -77,7 +77,7 @@ export class SermonsService {
         throw new BadRequestException('OpenAI API key is not configured');
       }
       
-      // Generate sermon content using OpenAI service
+      // Generate sermon content using OpenAI service with enhanced parameters
       const generatedSermon = await this.openAIService.generateSermon({
         title: generateSermonDto.title,
         theme: generateSermonDto.theme,
@@ -85,6 +85,11 @@ export class SermonsService {
         audience: generateSermonDto.audience,
         length: generateSermonDto.length,
         style: generateSermonDto.style,
+        denomination: generateSermonDto.denomination,
+        theologicalFramework: generateSermonDto.theologicalFramework,
+        includeIllustrations: generateSermonDto.includeIllustrations,
+        includeApplicationPoints: generateSermonDto.includeApplicationPoints,
+        includeClosingPrayer: generateSermonDto.includeClosingPrayer,
         additionalInstructions: generateSermonDto.additionalInstructions,
       });
       

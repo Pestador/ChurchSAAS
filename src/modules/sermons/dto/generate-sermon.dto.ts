@@ -1,5 +1,6 @@
-import { IsString, IsOptional, IsArray, IsEnum, IsNotEmpty, ValidateIf } from 'class-validator';
+import { IsString, IsOptional, IsArray, IsEnum, IsNotEmpty, ValidateIf, IsBoolean } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { SermonDenomination, SermonTheologicalFramework, SermonStyle } from '../../../services/openai.service';
 
 export enum SermonLength {
   SHORT = 'short',
@@ -30,8 +31,32 @@ export class GenerateSermonDto {
   length?: SermonLength;
 
   @IsOptional()
-  @IsString()
-  style?: string;
+  @IsEnum(SermonStyle)
+  style?: SermonStyle;
+
+  @IsOptional()
+  @IsEnum(SermonDenomination, {
+    message: 'Denomination must be one of: nondenominational, baptist, catholic, methodist, lutheran, presbyterian, pentecostal, anglican, orthodox'
+  })
+  denomination?: SermonDenomination;
+
+  @IsOptional()
+  @IsEnum(SermonTheologicalFramework, {
+    message: 'Theological framework must be one of: evangelical, reformed, armenian, liberation, progressive, traditional'
+  })
+  theologicalFramework?: SermonTheologicalFramework;
+
+  @IsOptional()
+  @IsBoolean()
+  includeIllustrations?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  includeApplicationPoints?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  includeClosingPrayer?: boolean;
 
   @IsOptional()
   @IsString()
