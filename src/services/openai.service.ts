@@ -235,14 +235,153 @@ Your task is to write a compelling, biblically-sound sermon`;
       includeHistoricalContext?: boolean;
       includeCrossReferences?: boolean;
       includeApplicationPoints?: boolean;
+      denomination?: SermonDenomination;
+      theologicalFramework?: SermonTheologicalFramework;
+      targetAudience?: string;
+      context?: string;
     } = {}
   ): Promise<Record<string, string>> {
     try {
-      // Will implement this in the next phase
-      return {};
+      // Default values if not provided
+      const depth = options.depth || 'detailed';
+      const style = options.style || 'educational';
+      const includeHistoricalContext = options.includeHistoricalContext !== false;
+      const includeCrossReferences = options.includeCrossReferences !== false;
+      const includeApplicationPoints = options.includeApplicationPoints !== false;
+      
+      // Create system prompt
+      const systemPrompt = this.buildBibleExplanationSystemPrompt(options);
+      
+      // Process each verse to get explanations
+      const explanations: Record<string, string> = {};
+      
+      // We'll process each verse individually to get the best explanation
+      for (const verse of verses) {
+        const userPrompt = this.buildBibleExplanationUserPrompt(verse, options);
+        
+        // Call OpenAI API
+        const response = await this.openai.chat.completions.create({
+          model: 'gpt-4o',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt }
+          ],
+          temperature: 0.6, // Slightly lower temperature for more factual responses
+          max_tokens: 2000,
+        });
+
+        const explanationContent = response.choices[0]?.message?.content || '';
+        explanations[verse] = explanationContent;
+      }
+      
+      return explanations;
     } catch (error) {
       this.logger.error(`Error generating Bible explanation: ${error.message}`, error.stack);
       throw new Error(`Failed to generate Bible explanation: ${error.message}`);
     }
+  }
+  
+  /**
+   * Creates a detailed system prompt for Bible verse explanation
+   */
+  private buildBibleExplanationSystemPrompt(options: any): string {
+    const { 
+      depth, 
+      style, 
+      denomination,
+      theologicalFramework,
+      targetAudience,
+    } = options;
+    
+    let prompt = `You are a biblical scholar and theological educator with expertise in hermeneutics, biblical languages, and practical application of Scripture.`;
+    
+    // Add denominational context
+    if (denomination) {
+      prompt += ` You have particular knowledge of ${denomination} theological traditions and interpretations.`;
+    }
+    
+    // Add theological framework
+    if (theologicalFramework) {
+      prompt += ` You approach Scripture from a ${theologicalFramework} theological framework.`;
+    }
+    
+    // Add audience targeting
+    if (targetAudience) {
+      prompt += ` Your explanation should be tailored for ${targetAudience}.`;
+    }
+    
+    // Add basic role instructions based on depth
+    if (depth === 'basic') {
+      prompt += `\n\nProvide a simple, accessible explanation of the provided Bible verse. Focus on the core message and primary meaning.`;
+    } else if (depth === 'academic') {
+      prompt += `\n\nProvide a scholarly, comprehensive analysis of the provided Bible verse. Include linguistic nuances, historical-cultural context, and theological significance.`;
+    } else { // detailed (default)
+      prompt += `\n\nProvide a thorough, balanced explanation of the provided Bible verse that includes both scholarly insights and practical applications.`;
+    }
+    
+    // Add style guidance
+    if (style === 'devotional') {
+      prompt += ` Your tone should be warm, personal, and spiritually nurturing.`;
+    } else if (style === 'practical') {
+      prompt += ` Your tone should be pragmatic, focusing on real-world applications and actionable insights.`;
+    } else if (style === 'educational') {
+      prompt += ` Your tone should be informative and instructional, helping readers learn about the text's meaning.`;
+    }
+    
+    // Add standard content requirements
+    prompt += `\n\nYour explanation should include:
+1. The verse's context within the larger biblical narrative
+2. Key words or concepts and their meanings
+3. The main theological teachings or principles conveyed`;
+    
+    // Add optional content based on options
+    if (options.includeHistoricalContext) {
+      prompt += `\n4. Historical and cultural background relevant to understanding the verse`;
+    }
+    
+    if (options.includeCrossReferences) {
+      prompt += `\n5. Relevant cross-references to other Scripture passages that illuminate this verse`;
+    }
+    
+    if (options.includeApplicationPoints) {
+      prompt += `\n6. Practical applications and relevance for contemporary life`;
+    }
+    
+    // Add final guidance
+    prompt += `\n\nEnsure your explanation is:
+- Biblically accurate and faithful to the original meaning
+- Well-structured and clearly presented
+- Balanced between academic insight and spiritual application
+- Respectful of various Christian traditions while being true to the denomination specified (if any)`;
+    
+    return prompt;
+  }
+  
+  /**
+   * Creates a specific user prompt for Bible verse explanation
+   */
+  private buildBibleExplanationUserPrompt(verse: string, options: any): string {
+    const { context } = options;
+    
+    let prompt = `Please provide an explanation of ${verse}`;
+    
+    // Add study context if provided
+    if (context) {
+      prompt += ` in the context of a Bible study on ${context}`;
+    }
+    
+    // Add specific requests based on depth
+    if (options.depth === 'basic') {
+      prompt += `. Keep the explanation accessible for newer Christians or those unfamiliar with the Bible.`;
+    } else if (options.depth === 'academic') {
+      prompt += `. Include original language insights, textual variants if relevant, and scholarly perspectives.`;
+    } else { // detailed
+      prompt += `. Balance scholarly insight with practical application for contemporary believers.`;
+    }
+    
+    // Add formatting instructions
+    prompt += `\n\nPlease format your explanation with proper headings, paragraphs, and bullet points where appropriate to enhance readability.`;
+    
+    return prompt;
   }
 }

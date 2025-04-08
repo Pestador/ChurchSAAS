@@ -69,7 +69,12 @@ export class BibleStudyController {
       }
     }
     
-    return this.bibleStudyService.generateAiExplanations(id, generateExplanationDto.bibleVerses, churchId);
+    return this.bibleStudyService.generateAiExplanations(
+      id, 
+      generateExplanationDto.bibleVerses, 
+      churchId,
+      generateExplanationDto
+    );
   }
 
   @Patch(':id')
