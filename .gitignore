@@ -115,3 +115,16 @@ dmypy.json
 .idea/
 *.iml
 node_modules
+
+# Large binary files
+*.exe
+*.msi
+*.iso
+*.dmg
+*.zip
+*.tar.gz
+*.rar
+
+# Specific files that were causing issues
+DockerDesktopInstaller.exe
+nodejs_installer.msi
