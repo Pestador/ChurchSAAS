@@ -114,3 +114,4 @@ dmypy.json
 # PyCharm
 .idea/
 *.iml
+node_modules

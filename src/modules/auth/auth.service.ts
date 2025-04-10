@@ -48,7 +48,7 @@ export class AuthService {
 
   async register(registrationData: any) {
     // Create the user
-    const newUser = await this.usersService.create(registrationData, registrationData.churchId);
+    const newUser = await this.usersService.create(registrationData);
     
     // Return access token
     const { password: _, ...user } = newUser;

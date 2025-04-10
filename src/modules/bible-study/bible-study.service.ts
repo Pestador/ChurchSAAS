@@ -6,7 +6,7 @@ import { Church } from '../../entities/church.entity';
 import { CreateBibleStudyDto } from './dto/create-bible-study.dto';
 import { UpdateBibleStudyDto } from './dto/update-bible-study.dto';
 import { OpenAIService } from '../../services/openai.service';
-import { GenerateExplanationDto } from './dto/generate-explanation.dto';
+import { GenerateExplanationDto, ExplanationDepth, ExplanationStyle } from './dto/generate-explanation.dto';
 
 @Injectable()
 export class BibleStudyService {
@@ -97,13 +97,13 @@ export class BibleStudyService {
       
       // Map ExplanationDepth and ExplanationStyle to the format expected by the OpenAI service
       let depth: 'basic' | 'detailed' | 'academic' = 'detailed';
-      if (options?.depth === 'BASIC') depth = 'basic';
-      else if (options?.depth === 'DETAILED') depth = 'detailed';
+      if (options?.depth === ExplanationDepth.BASIC) depth = 'basic';
+      else if (options?.depth === ExplanationDepth.DETAILED) depth = 'detailed';
       
       let style: 'devotional' | 'educational' | 'practical' = 'educational';
-      if (options?.style === 'DEVOTIONAL') style = 'devotional';
-      else if (options?.style === 'PASTORAL') style = 'practical';
-      else if (options?.style === 'ACADEMIC') style = 'educational';
+      if (options?.style === ExplanationStyle.DEVOTIONAL) style = 'devotional';
+      else if (options?.style === ExplanationStyle.PASTORAL) style = 'practical';
+      else if (options?.style === ExplanationStyle.ACADEMIC) style = 'educational';
       
       // Call OpenAI service to generate explanations
       const explanations = await this.openAIService.generateBibleExplanation(verses, {

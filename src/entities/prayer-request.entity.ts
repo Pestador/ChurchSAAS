@@ -65,6 +65,9 @@ export class PrayerRequest {
   @Column({ default: 0 })
   prayerCount: number;
 
+  @Column({ nullable: true })
+  lastScannedAt: Date;
+
   @CreateDateColumn()
   createdAt: Date;
 

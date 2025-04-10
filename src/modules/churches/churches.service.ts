@@ -1,7 +1,9 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { Church, SubscriptionPlan } from '../../entities/church.entity';
+import { CreateChurchDto } from './dto/create-church.dto';
+import { UpdateChurchDto } from './dto/update-church.dto';
 
 @Injectable()
 export class ChurchesService {
@@ -11,14 +13,22 @@ export class ChurchesService {
   ) {}
 
   async findAll(): Promise<Church[]> {
-    return this.churchesRepository.find();
+    return this.churchesRepository.find({ 
+      relations: ['users'],
+      order: { name: 'ASC' } 
+    });
+  }
+  
+  async findAllByIds(ids: string[]): Promise<Church[]> {
+    return this.churchesRepository.find({
+      where: { id: In(ids) },
+      relations: ['users'],
+      order: { name: 'ASC' }
+    });
   }
 
   async findOne(id: string): Promise<Church> {
-    const church = await this.churchesRepository.findOne({ 
-      where: { id },
-      relations: ['users'] 
-    });
+    const church = await this.churchesRepository.findOne({ where: { id } });
     if (!church) {
       throw new NotFoundException(`Church with ID ${id} not found`);
     }
@@ -29,29 +39,47 @@ export class ChurchesService {
     return this.churchesRepository.findOne({ where: { name } });
   }
 
-  async create(createChurchDto: any): Promise<Church> {
+  async create(createChurchDto: CreateChurchDto): Promise<Church> {
     // Check if church name already exists
     const existingChurch = await this.findByName(createChurchDto.name);
     if (existingChurch) {
       throw new ConflictException('Church name already exists');
     }
 
-    // Create new church
-    const newChurch = this.churchesRepository.create({
-      ...createChurchDto,
-      subscriptionPlan: SubscriptionPlan.FREE, // Default to free plan
-    });
-
-    return this.churchesRepository.save(newChurch);
+    try {
+      const newChurch = this.churchesRepository.create({
+        ...createChurchDto,
+        subscriptionPlan: SubscriptionPlan.FREE, // Default to free plan
+      });
+      return await this.churchesRepository.save(newChurch);
+    } catch (error) {
+      throw new InternalServerErrorException('Error creating church');
+    }
   }
 
-  async update(id: string, updateChurchDto: any): Promise<Church> {
-    // Check if church exists
-    await this.findOne(id);
+  async update(id: string, updateChurchDto: UpdateChurchDto): Promise<Church> {
+    const church = await this.findOne(id); // findOne checks existence
 
-    // Update church
-    await this.churchesRepository.update(id, updateChurchDto);
-    return this.findOne(id);
+    // Optional: Add checks if sensitive fields like email are being changed and might conflict
+    if (updateChurchDto.email && updateChurchDto.email !== church.email) {
+      const existing = await this.churchesRepository.findOne({ where: { email: updateChurchDto.email } });
+      if (existing && existing.id !== id) {
+        throw new ConflictException('Email already used by another church');
+      }
+    }
+
+    Object.assign(church, updateChurchDto);
+
+    try {
+      return await this.churchesRepository.save(church);
+    } catch (error) {
+      // Handle potential conflicts or other DB errors during update
+      if (error.code === '23505') { // Example: unique constraint violation
+        throw new ConflictException('Update violates a unique constraint (e.g., email)');
+      } else {
+        throw new InternalServerErrorException('Error updating church');
+      }
+    }
   }
 
   async updateSubscription(id: string, plan: SubscriptionPlan, stripeData?: any): Promise<Church> {
@@ -70,7 +98,8 @@ export class ChurchesService {
   }
 
   async remove(id: string): Promise<void> {
-    const church = await this.findOne(id);
+    const church = await this.findOne(id); // Ensure church exists before attempting removal
     await this.churchesRepository.remove(church);
+    // Consider soft delete if needed: await this.churchesRepository.softRemove(church);
   }
 }

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bible Study AI Explanation Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .container {
+            max-width: 1000px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            margin-top: 40px;
+        }
+        .explanation-container {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+        .spinner-border {
+            display: none;
+        }
+        h1 {
+            color: #4a4a4a;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+        }
+        .feature-card {
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+        }
+        .feature-title {
+            font-weight: 600;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        .navbar {
+            background-color: #343a40 !important;
+        }
+        .nav-link {
+            color: white !important;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0069d9;
+            border-color: #0062cc;
+        }
+        #explanationsContainer {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .api-mode-toggle {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+        .login-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            display: none;
+        }
+        .text-success {
+            color: #28a745 !important;
+        }
+        .text-danger {
+            color: #dc3545 !important;
+        }
+        .explanation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .verse-reference {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .depth-badge {
+            background-color: #6c757d;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Church SaaS Platform</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Bible Study</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Sermons</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Prayer Requests</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Bible Study AI Explanation Demo</h1>
+        
+        <div class="api-mode-toggle">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="apiModeToggle">
+                <label class="form-check-label" for="apiModeToggle">
+                    <span id="demoModeLabel">Demo Mode (No API)</span>
+                    <span id="apiModeLabel" style="display: none;">Live API Mode</span>
+                </label>
+            </div>
+        </div>
+        
+        <div id="loginSection" class="login-section">
+            <h4>Authentication Required</h4>
+            <p>Enter your credentials to access the Bible Study Explanation API</p>
+            
+            <form id="loginForm" class="row g-3">
+                <div class="col-md-5">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" placeholder="Your email">
+                </div>
+                <div class="col-md-5">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" placeholder="Your password">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </div>
+            </form>
+            
+            <div id="authStatus" class="mt-2" style="display: none;">
+                <span id="authStatusText"></span>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-title">Depth Options</div>
+                    <p>Choose from basic, detailed, or academic explanations based on your audience's needs.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-title">Teaching Styles</div>
+                    <p>Customize explanations with devotional, educational, or practical teaching approaches.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-title">Contextual Understanding</div>
+                    <p>Get historical background, cross-references, and application points for deeper study.</p>
+                </div>
+            </div>
+        </div>
+        
+        <form id="bibleStudyForm">
+            <div class="mb-3">
+                <label for="bibleVerses" class="form-label">Bible Verses</label>
+                <input type="text" class="form-control" id="bibleVerses" placeholder="E.g., John 3:16, Romans 8:28">
+                <div class="form-text">Enter one or more Bible verses separated by commas</div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="context" class="form-label">Study Context (Optional)</label>
+                <input type="text" class="form-control" id="context" placeholder="E.g., God's love, Faith in difficult times">
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="depth" class="form-label">Explanation Depth</label>
+                    <select class="form-select" id="depth">
+                        <option value="BASIC">Basic - Simple explanation</option>
+                        <option value="STANDARD" selected>Detailed - Balanced scholarly and practical</option>
+                        <option value="ACADEMIC">Academic - Deep theological analysis</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="style" class="form-label">Explanation Style</label>
+                    <select class="form-select" id="style">
+                        <option value="DEVOTIONAL">Devotional - Spiritual nurturing</option>
+                        <option value="EDUCATIONAL" selected>Educational - Informative teaching</option>
+                        <option value="PRACTICAL">Practical - Application focused</option>
+                        <option value="CONVERSATIONAL">Conversational - Natural dialogue</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="includeHistoricalContext" checked>
+                <label class="form-check-label" for="includeHistoricalContext">
+                    Include historical and cultural context
+                </label>
+            </div>
+            
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="includeCrossReferences" checked>
+                <label class="form-check-label" for="includeCrossReferences">
+                    Include cross-references to other related passages
+                </label>
+            </div>
+            
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="includeApplicationPoints" checked>
+                <label class="form-check-label" for="includeApplicationPoints">
+                    Include practical application points
+                </label>
+            </div>
+            
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <span class="spinner-border spinner-border-sm me-2" id="spinner" role="status" aria-hidden="true"></span>
+                    Generate Explanation
+                </button>
+            </div>
+        </form>
+        
+        <div id="explanationsContainer" class="mt-4"></div>
+    </div>
+
+    <script src="js/bible-study-api.js"></script>
+    <script>
+        // Initialize API client
+        const api = new BibleStudyAPI();
+        let useRealApi = false;
+        
+        // API mode toggle
+        document.getElementById('apiModeToggle').addEventListener('change', function(e) {
+            useRealApi = e.target.checked;
+            document.getElementById('demoModeLabel').style.display = useRealApi ? 'none' : 'inline';
+            document.getElementById('apiModeLabel').style.display = useRealApi ? 'inline' : 'none';
+            document.getElementById('loginSection').style.display = useRealApi ? 'block' : 'none';
+        });
+        
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                showAuthStatus('Please enter both email and password', false);
+                return;
+            }
+            
+            try {
+                await api.login(email, password);
+                showAuthStatus('Successfully logged in!', true);
+            } catch (error) {
+                showAuthStatus(`Login failed: ${error.message}`, false);
+            }
+        });
+        
+        function showAuthStatus(message, success) {
+            const statusElement = document.getElementById('authStatus');
+            const statusTextElement = document.getElementById('authStatusText');
+            
+            statusElement.style.display = 'block';
+            statusTextElement.textContent = message;
+            statusTextElement.className = success ? 'text-success' : 'text-danger';
+            
+            if (success) {
+                setTimeout(() => {
+                    statusElement.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // Bible study form handler
+        document.getElementById('bibleStudyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const bibleVerses = document.getElementById('bibleVerses').value
+                .split(',')
+                .map(verse => verse.trim())
+                .filter(verse => verse.length > 0);
+                
+            if (bibleVerses.length === 0) {
+                alert('Please enter at least one Bible verse');
+                return;
+            }
+            
+            const options = {
+                context: document.getElementById('context').value,
+                depth: document.getElementById('depth').value,
+                style: document.getElementById('style').value,
+                includeHistoricalContext: document.getElementById('includeHistoricalContext').checked,
+                includeCrossReferences: document.getElementById('includeCrossReferences').checked,
+                includeApplicationPoints: document.getElementById('includeApplicationPoints').checked,
+            };
+            
+            // Show spinner
+            document.getElementById('spinner').style.display = 'inline-block';
+            
+            try {
+                let result;
+                
+                if (useRealApi) {
+                    // Use real API
+                    result = await api.generateExplanation(bibleVerses, options);
+                } else {
+                    // Use simulated API
+                    result = await api.simulateExplanation(bibleVerses, options);
+                }
+                
+                // Display explanations
+                displayExplanations(result);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to generate explanation: ' + error.message);
+            } finally {
+                // Hide spinner
+                document.getElementById('spinner').style.display = 'none';
+            }
+        });
+        
+        function displayExplanations(result) {
+            const container = document.getElementById('explanationsContainer');
+            container.innerHTML = '';
+            
+            // If using real API, structure might be different
+            const explanations = result.explanations || {};
+            
+            for (const verse in explanations) {
+                const explanation = explanations[verse];
+                const explanationDiv = document.createElement('div');
+                explanationDiv.className = 'explanation-container mb-4';
+                
+                const depthLabel = getDepthLabel(explanation.options?.depth || 'STANDARD');
+                
+                explanationDiv.innerHTML = `
+                    <div class="explanation-header mb-3">
+                        <h4 class="verse-reference">${verse}</h4>
+                        <span class="depth-badge">${depthLabel}</span>
+                    </div>
+                    <div class="explanation-content">
+                        ${formatExplanation(explanation.explanation)}
+                    </div>
+                `;
+                
+                container.appendChild(explanationDiv);
+            }
+            
+            if (Object.keys(explanations).length === 0) {
+                container.innerHTML = '<div class="alert alert-warning">No explanations generated. Please try again.</div>';
+            }
+        }
+        
+        function formatExplanation(text) {
+            if (!text) return '<p>No explanation available.</p>';
+            
+            // If explanation is already HTML, return as is
+            if (text.includes('<h') || text.includes('<p>')) {
+                return text;
+            }
+            
+            // Simple formatter: Convert paragraphs and line breaks
+            return text
+                .split('\n\n')
+                .map(para => `<p>${para.replace(/\n/g, '<br>')}</p>`)
+                .join('');
+        }
+        
+        function getDepthLabel(depth) {
+            const depthLabels = {
+                'BASIC': 'Basic',
+                'STANDARD': 'Standard',
+                'ACADEMIC': 'Academic',
+                'basic': 'Basic',
+                'standard': 'Standard',
+                'academic': 'Academic'
+            };
+            
+            return depthLabels[depth] || 'Standard';
+        }
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

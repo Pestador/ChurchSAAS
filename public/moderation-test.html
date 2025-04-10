@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Moderation - Church SaaS Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .container {
+            max-width: 1000px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            margin-top: 40px;
+        }
+        .navbar {
+            background-color: #343a40 !important;
+        }
+        .nav-link {
+            color: white !important;
+        }
+        h1 {
+            color: #4a4a4a;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0069d9;
+            border-color: #0062cc;
+        }
+        .spinner-border {
+            display: none;
+        }
+        .feature-card {
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+        }
+        .feature-title {
+            font-weight: 600;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        .login-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+        .tab-content {
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            background-color: white;
+        }
+        .nav-tabs .nav-item .nav-link {
+            color: #495057;
+        }
+        .nav-tabs .nav-item .nav-link.active {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .flagged-item {
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #fff;
+        }
+        .flagged-item:hover {
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .high-severity {
+            border-left: 4px solid #dc3545;
+        }
+        .medium-severity {
+            border-left: 4px solid #fd7e14;
+        }
+        .low-severity {
+            border-left: 4px solid #ffc107;
+        }
+        .api-mode-toggle {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+        .severity-badge {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+        }
+        .stats-card {
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+        }
+        .stats-card h3 {
+            font-size: 1.8rem;
+            margin: 0;
+        }
+        .stats-card p {
+            margin: 5px 0 0 0;
+            opacity: 0.8;
+        }
+        .stat-total {
+            background-color: #6c757d;
+        }
+        .stat-unresolved {
+            background-color: #fd7e14;
+        }
+        .stat-high {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Church SaaS Platform</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="test-client.html">Bible Study</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="tts-test.html">Text-to-Speech</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Content Moderation</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Content Moderation</h1>
+        
+        <div class="api-mode-toggle">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="apiModeToggle">
+                <label class="form-check-label" for="apiModeToggle">
+                    <span id="demoModeLabel">Demo Mode (No API)</span>
+                    <span id="apiModeLabel" style="display: none;">Live API Mode</span>
+                </label>
+            </div>
+        </div>
+        
+        <div id="loginSection" class="login-section">
+            <h4>Authentication Required</h4>
+            <p>Enter your credentials to access the moderation dashboard</p>
+            
+            <form id="loginForm" class="row g-3">
+                <div class="col-md-5">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" placeholder="Your email">
+                </div>
+                <div class="col-md-5">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" placeholder="Your password">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </div>
+            </form>
+            
+            <div id="authStatus" class="mt-2" style="display: none;">
+                <span id="authStatusText"></span>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-title">Content Filtering</div>
+                    <p>Pre-submission filtering to prevent inappropriate content from being posted.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-title">Moderation Tools</div>
+                    <p>Review and manage flagged content with comprehensive moderation tools.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-title">Automated Flagging</div>
+                    <p>Automated system to detect and flag potentially inappropriate content.</p>
+                </div>
+            </div>
+        </div>
+        
+        <ul class="nav nav-tabs" id="moderationTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab" aria-controls="dashboard" aria-selected="true">Dashboard</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="test-filter-tab" data-bs-toggle="tab" data-bs-target="#test-filter" type="button" role="tab" aria-controls="test-filter" aria-selected="false">Test Filter</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="flagged-content-tab" data-bs-toggle="tab" data-bs-target="#flagged-content" type="button" role="tab" aria-controls="flagged-content" aria-selected="false">Flagged Content</button>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="moderationTabContent">
+            <!-- Dashboard Tab -->
+            <div class="tab-pane fade show active" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
+                <h4 class="mb-4">Moderation Statistics</h4>
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="stats-card stat-total">
+                            <h3 id="totalCount">32</h3>
+                            <p>Total Flagged Items</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stats-card stat-unresolved">
+                            <h3 id="unresolvedCount">12</h3>
+                            <p>Unresolved Items</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stats-card stat-high">
+                            <h3 id="highSeverityCount">5</h3>
+                            <p>High Severity Items</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <h5 class="mt-4 mb-3">Content Type Breakdown</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <canvas id="contentTypeChart" height="200"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <canvas id="severityChart" height="200"></canvas>
+                    </div>
+                </div>
+                
+                <h5 class="mt-4 mb-3">Recent Activity</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Action</th>
+                                <th>Content Type</th>
+                                <th>User</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activityTable">
+                            <tr>
+                                <td>Today, 14:32</td>
+                                <td>Content Flagged</td>
+                                <td>Prayer Request</td>
+                                <td>system</td>
+                            </tr>
+                            <tr>
+                                <td>Today, 13:15</td>
+                                <td>Flag Resolved</td>
+                                <td>Comment</td>
+                                <td>admin@example.com</td>
+                            </tr>
+                            <tr>
+                                <td>Yesterday, 18:42</td>
+                                <td>Content Flagged</td>
+                                <td>Sermon</td>
+                                <td>system</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Test Filter Tab -->
+            <div class="tab-pane fade" id="test-filter" role="tabpanel" aria-labelledby="test-filter-tab">
+                <h4 class="mb-4">Test Content Filter</h4>
+                <p>Enter text below to check if it would be flagged by the content moderation system.</p>
+                
+                <form id="testFilterForm">
+                    <div class="mb-3">
+                        <label for="contentText" class="form-label">Content to Check</label>
+                        <textarea class="form-control" id="contentText" rows="6" placeholder="Enter content to check..."></textarea>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <span class="spinner-border spinner-border-sm me-2" id="filterSpinner" role="status" aria-hidden="true"></span>
+                            Check Content
+                        </button>
+                    </div>
+                </form>
+                
+                <div id="filterResult" class="mt-4" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Filter Results</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="resultContent">
+                                <!-- Result will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Flagged Content Tab -->
+            <div class="tab-pane fade" id="flagged-content" role="tabpanel" aria-labelledby="flagged-content-tab">
+                <h4 class="mb-4">Review Flagged Content</h4>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">Filter By:</span>
+                            <select class="form-select" id="contentTypeFilter">
+                                <option value="all" selected>All Content Types</option>
+                                <option value="prayer_request">Prayer Requests</option>
+                                <option value="sermon">Sermons</option>
+                                <option value="comment">Comments</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text">Status:</span>
+                            <select class="form-select" id="resolvedFilter">
+                                <option value="all" selected>All</option>
+                                <option value="unresolved">Unresolved</option>
+                                <option value="resolved">Resolved</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="flaggedContentList">
+                    <!-- High Severity Example -->
+                    <div class="flagged-item high-severity">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="mb-0">Prayer Request Content</h5>
+                            <span class="badge bg-danger severity-badge">High Severity</span>
+                        </div>
+                        <p class="text-muted mb-2">Flagged on: April 8, 2025 at 10:32 AM</p>
+                        <div class="card mb-3">
+                            <div class="card-body bg-light">
+                                <p class="mb-0">This is an example of content that would be flagged as high severity due to violent language.</p>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <span class="badge bg-secondary me-2">Category: VIOLENCE</span>
+                            <span class="badge bg-secondary me-2">Score: 0.82</span>
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-sm btn-outline-secondary me-2" data-bs-toggle="collapse" data-bs-target="#reviewForm1">Review</button>
+                            <a href="#" class="btn btn-sm btn-outline-primary">View Original</a>
+                        </div>
+                        <div class="collapse mt-3" id="reviewForm1">
+                            <div class="card card-body">
+                                <form>
+                                    <div class="mb-3">
+                                        <label class="form-label">Review Notes</label>
+                                        <textarea class="form-control" rows="3" placeholder="Add review notes..."></textarea>
+                                    </div>
+                                    <div class="d-flex">
+                                        <button type="button" class="btn btn-success me-2">Approve Content</button>
+                                        <button type="button" class="btn btn-danger">Keep Blocked</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Medium Severity Example -->
+                    <div class="flagged-item medium-severity">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="mb-0">Comment on Sermon</h5>
+                            <span class="badge bg-warning text-dark severity-badge">Medium Severity</span>
+                        </div>
+                        <p class="text-muted mb-2">Flagged on: April 7, 2025 at 4:15 PM</p>
+                        <div class="card mb-3">
+                            <div class="card-body bg-light">
+                                <p class="mb-0">This is an example of content that would be flagged as medium severity due to potentially inappropriate language.</p>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <span class="badge bg-secondary me-2">Category: MISLEADING</span>
+                            <span class="badge bg-secondary me-2">Score: 0.65</span>
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-sm btn-outline-secondary me-2" data-bs-toggle="collapse" data-bs-target="#reviewForm2">Review</button>
+                            <a href="#" class="btn btn-sm btn-outline-primary">View Original</a>
+                        </div>
+                        <div class="collapse mt-3" id="reviewForm2">
+                            <div class="card card-body">
+                                <form>
+                                    <div class="mb-3">
+                                        <label class="form-label">Review Notes</label>
+                                        <textarea class="form-control" rows="3" placeholder="Add review notes..."></textarea>
+                                    </div>
+                                    <div class="d-flex">
+                                        <button type="button" class="btn btn-success me-2">Approve Content</button>
+                                        <button type="button" class="btn btn-danger">Keep Blocked</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Low Severity Example -->
+                    <div class="flagged-item low-severity">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="mb-0">Sermon Content</h5>
+                            <span class="badge bg-info severity-badge">Low Severity</span>
+                        </div>
+                        <p class="text-muted mb-2">Flagged on: April 6, 2025 at 9:22 AM</p>
+                        <div class="card mb-3">
+                            <div class="card-body bg-light">
+                                <p class="mb-0">This is an example of content that would be flagged as low severity due to potentially controversial but not harmful content.</p>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <span class="badge bg-secondary me-2">Category: POLITICAL</span>
+                            <span class="badge bg-secondary me-2">Score: 0.35</span>
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-sm btn-outline-secondary me-2" data-bs-toggle="collapse" data-bs-target="#reviewForm3">Review</button>
+                            <a href="#" class="btn btn-sm btn-outline-primary">View Original</a>
+                        </div>
+                        <div class="collapse mt-3" id="reviewForm3">
+                            <div class="card card-body">
+                                <form>
+                                    <div class="mb-3">
+                                        <label class="form-label">Review Notes</label>
+                                        <textarea class="form-control" rows="3" placeholder="Add review notes..."></textarea>
+                                    </div>
+                                    <div class="d-flex">
+                                        <button type="button" class="btn btn-success me-2">Approve Content</button>
+                                        <button type="button" class="btn btn-danger">Keep Blocked</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <nav aria-label="Flagged content pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/bible-study-api.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Initialize API client - reusing the same client as Bible Study
+        const api = new BibleStudyAPI();
+        let useRealApi = false;
+
+        // API mode toggle
+        document.getElementById('apiModeToggle').addEventListener('change', function(e) {
+            useRealApi = e.target.checked;
+            document.getElementById('demoModeLabel').style.display = useRealApi ? 'none' : 'inline';
+            document.getElementById('apiModeLabel').style.display = useRealApi ? 'inline' : 'none';
+        });
+        
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                showAuthStatus('Please enter both email and password', false);
+                return;
+            }
+            
+            try {
+                await api.login(email, password);
+                showAuthStatus('Successfully logged in!', true);
+            } catch (error) {
+                showAuthStatus(`Login failed: ${error.message}`, false);
+            }
+        });
+        
+        function showAuthStatus(message, success) {
+            const statusElement = document.getElementById('authStatus');
+            const statusTextElement = document.getElementById('authStatusText');
+            
+            statusElement.style.display = 'block';
+            statusTextElement.textContent = message;
+            statusTextElement.className = success ? 'text-success' : 'text-danger';
+            
+            if (success) {
+                setTimeout(() => {
+                    statusElement.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // Content filter test form handler
+        document.getElementById('testFilterForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const content = document.getElementById('contentText').value.trim();
+            if (!content) {
+                alert('Please enter some content to check');
+                return;
+            }
+            
+            // Show spinner
+            document.getElementById('filterSpinner').style.display = 'inline-block';
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Hide spinner
+                document.getElementById('filterSpinner').style.display = 'none';
+                
+                // Check for keywords to simulate different results
+                let isFlagged = false;
+                let severity = 'NONE';
+                let categories = [];
+                let reasons = [];
+                let score = 0;
+                
+                const lowerContent = content.toLowerCase();
+                
+                if (lowerContent.includes('hate') || lowerContent.includes('racist') || lowerContent.includes('kill')) {
+                    isFlagged = true;
+                    severity = 'HIGH';
+                    categories.push('HATE', 'VIOLENCE');
+                    reasons.push('Potential hate speech detected', 'Violent content detected');
+                    score = 0.85;
+                } else if (lowerContent.includes('stupid') || lowerContent.includes('idiot') || lowerContent.includes('attack')) {
+                    isFlagged = true;
+                    severity = 'MEDIUM';
+                    categories.push('HARASSMENT');
+                    reasons.push('Potential harassment detected');
+                    score = 0.65;
+                } else if (lowerContent.includes('political') || lowerContent.includes('controversial')) {
+                    isFlagged = true;
+                    severity = 'LOW';
+                    categories.push('POLITICAL');
+                    reasons.push('Political content detected');
+                    score = 0.35;
+                }
+                
+                // Display results
+                const resultElement = document.getElementById('resultContent');
+                const resultCard = document.getElementById('filterResult');
+                
+                if (isFlagged) {
+                    let severityClass = '';
+                    let severityText = '';
+                    
+                    if (severity === 'HIGH') {
+                        severityClass = 'danger';
+                        severityText = 'High Severity';
+                    } else if (severity === 'MEDIUM') {
+                        severityClass = 'warning';
+                        severityText = 'Medium Severity';
+                    } else {
+                        severityClass = 'info';
+                        severityText = 'Low Severity';
+                    }
+                    
+                    resultElement.innerHTML = `
+                        <div class="alert alert-${severityClass}">
+                            <h5 class="alert-heading">Content Flagged - ${severityText}</h5>
+                            <p>This content would be flagged by the moderation system.</p>
+                        </div>
+                        <h6>Flagged Categories:</h6>
+                        <div class="mb-3">
+                            ${categories.map(category => `<span class="badge bg-secondary me-2">${category}</span>`).join('')}
+                        </div>
+                        <h6>Reasons:</h6>
+                        <ul>
+                            ${reasons.map(reason => `<li>${reason}</li>`).join('')}
+                        </ul>
+                        <div class="mt-3">
+                            <p><strong>Moderation Score:</strong> ${score.toFixed(2)}</p>
+                        </div>
+                    `;
+                } else {
+                    resultElement.innerHTML = `
+                        <div class="alert alert-success">
+                            <h5 class="alert-heading">Content Approved</h5>
+                            <p>This content would not be flagged by the moderation system.</p>
+                        </div>
+                        <div class="mt-3">
+                            <p><strong>Moderation Score:</strong> ${score.toFixed(2)}</p>
+                        </div>
+                    `;
+                }
+                
+                resultCard.style.display = 'block';
+                resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                
+            }, 1500);
+        });
+
+        // Initialize charts when the dashboard tab is shown
+        document.getElementById('moderationTab').addEventListener('shown.bs.tab', function(e) {
+            if (e.target.id === 'dashboard-tab') {
+                initializeCharts();
+            }
+        });
+
+        function initializeCharts() {
+            // Content Type Chart
+            const contentTypeCtx = document.getElementById('contentTypeChart').getContext('2d');
+            new Chart(contentTypeCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Prayer Requests', 'Sermons', 'Comments', 'Bible Studies'],
+                    datasets: [{
+                        data: [12, 8, 10, 2],
+                        backgroundColor: [
+                            '#6610f2',
+                            '#20c997',
+                            '#fd7e14',
+                            '#0dcaf0'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Flagged Content by Type'
+                        }
+                    }
+                }
+            });
+
+            // Severity Chart
+            const severityCtx = document.getElementById('severityChart').getContext('2d');
+            new Chart(severityCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['High Severity', 'Medium Severity', 'Low Severity'],
+                    datasets: [{
+                        data: [5, 12, 15],
+                        backgroundColor: [
+                            '#dc3545',
+                            '#fd7e14',
+                            '#ffc107'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Flagged Content by Severity'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize the charts on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+        });
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

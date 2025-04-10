@@ -1,32 +1,35 @@
 import { Injectable, Logger } from '@nestjs/common';
 import OpenAI from 'openai';
 
-export type SermonDenomination = 
-  | 'nondenominational' 
-  | 'baptist' 
-  | 'catholic' 
-  | 'methodist' 
-  | 'lutheran' 
-  | 'presbyterian' 
-  | 'pentecostal' 
-  | 'anglican' 
-  | 'orthodox';
+export enum SermonDenomination {
+  NONDENOMINATIONAL = 'nondenominational',
+  BAPTIST = 'baptist',
+  CATHOLIC = 'catholic',
+  METHODIST = 'methodist',
+  LUTHERAN = 'lutheran',
+  PRESBYTERIAN = 'presbyterian',
+  PENTECOSTAL = 'pentecostal',
+  ANGLICAN = 'anglican',
+  ORTHODOX = 'orthodox'
+}
 
-export type SermonTheologicalFramework = 
-  | 'evangelical' 
-  | 'reformed' 
-  | 'armenian' 
-  | 'liberation' 
-  | 'progressive' 
-  | 'traditional';
+export enum SermonTheologicalFramework {
+  EVANGELICAL = 'evangelical',
+  REFORMED = 'reformed', 
+  ARMENIAN = 'armenian',
+  LIBERATION = 'liberation',
+  PROGRESSIVE = 'progressive',
+  TRADITIONAL = 'traditional'
+}
 
-export type SermonStyle = 
-  | 'expository' 
-  | 'topical' 
-  | 'narrative' 
-  | 'textual' 
-  | 'practical' 
-  | 'devotional';
+export enum SermonStyle {
+  EXPOSITORY = 'expository',
+  TOPICAL = 'topical',
+  NARRATIVE = 'narrative',
+  TEXTUAL = 'textual',
+  PRACTICAL = 'practical',
+  DEVOTIONAL = 'devotional'
+}
 
 @Injectable()
 export class OpenAIService {
@@ -51,7 +54,7 @@ export class OpenAIService {
     bibleVerses?: string[];
     audience?: string;
     length?: 'short' | 'medium' | 'long';
-    style?: string;
+    style?: SermonStyle;
     denomination?: SermonDenomination;
     theologicalFramework?: SermonTheologicalFramework;
     includeIllustrations?: boolean;
@@ -199,13 +202,13 @@ Your task is to write a compelling, biblically-sound sermon`;
       prompt += `. Use a ${promptData.style} preaching style`;
       
       // Add style-specific guidance
-      if (promptData.style === 'expository') {
+      if (promptData.style === SermonStyle.EXPOSITORY) {
         prompt += ` that systematically explains the passage verse by verse`;
-      } else if (promptData.style === 'topical') {
+      } else if (promptData.style === SermonStyle.TOPICAL) {
         prompt += ` that addresses the theme using multiple relevant scriptures`;
-      } else if (promptData.style === 'narrative') {
+      } else if (promptData.style === SermonStyle.NARRATIVE) {
         prompt += ` that tells the biblical story in an engaging way`;
-      } else if (promptData.style === 'practical') {
+      } else if (promptData.style === SermonStyle.PRACTICAL) {
         prompt += ` with clear, actionable application points`;
       }
     }

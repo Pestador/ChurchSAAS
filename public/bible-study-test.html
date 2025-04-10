@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bible Study AI Explanation Tester</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .explanation-container {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+        .spinner-border {
+            display: none;
+        }
+        h1 {
+            color: #495057;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Bible Study AI Explanation Generator</h1>
+        <form id="bibleStudyForm">
+            <div class="mb-3">
+                <label for="bibleVerses" class="form-label">Bible Verses</label>
+                <input type="text" class="form-control" id="bibleVerses" placeholder="E.g., John 3:16, Romans 8:28">
+                <div class="form-text">Enter one or more Bible verses separated by commas</div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="context" class="form-label">Study Context (Optional)</label>
+                <input type="text" class="form-control" id="context" placeholder="E.g., God's love, Faith in difficult times">
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="depth" class="form-label">Explanation Depth</label>
+                    <select class="form-select" id="depth">
+                        <option value="basic">Basic - Simple explanation</option>
+                        <option value="detailed" selected>Detailed - Balanced scholarly and practical</option>
+                        <option value="academic">Academic - Deep theological analysis</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="style" class="form-label">Explanation Style</label>
+                    <select class="form-select" id="style">
+                        <option value="devotional">Devotional - Spiritual nurturing</option>
+                        <option value="educational" selected>Educational - Informative teaching</option>
+                        <option value="practical">Practical - Application focused</option>
+                        <option value="conversational">Conversational - Natural dialogue</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <span class="spinner-border spinner-border-sm me-2" id="spinner" role="status" aria-hidden="true"></span>
+                    Generate Explanation
+                </button>
+            </div>
+        </form>
+        
+        <div id="explanationsContainer" class="mt-4"></div>
+    </div>
+
+    <script>
+        document.getElementById('bibleStudyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const bibleVerses = document.getElementById('bibleVerses').value
+                .split(',')
+                .map(verse => verse.trim())
+                .filter(verse => verse.length > 0);
+                
+            if (bibleVerses.length === 0) {
+                alert('Please enter at least one Bible verse');
+                return;
+            }
+            
+            const context = document.getElementById('context').value;
+            const depth = document.getElementById('depth').value;
+            const style = document.getElementById('style').value;
+            
+            // Show spinner
+            document.getElementById('spinner').style.display = 'inline-block';
+            
+            try {
+                // Normally we would use an actual API endpoint here.
+                // For testing purposes, let's fetch a mock response.
+                // In a real implementation you would call your API with:
+                
+                /*
+                const response = await fetch('/api/bible-studies/ai-explanations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer YOUR_JWT_TOKEN'
+                    },
+                    body: JSON.stringify({
+                        bibleVerses,
+                        context,
+                        depth,
+                        style
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+                
+                const data = await response.json();
+                */
+                
+                // For demo purposes, let's simulate a response
+                await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API delay
+                
+                const mockExplanations = {};
+                
+                bibleVerses.forEach(verse => {
+                    mockExplanations[verse] = `
+                    <h4>${verse}</h4>
+                    <p>This is a sample AI-generated explanation for ${verse} with ${depth} depth and ${style} style.</p>
+                    <p>In a real implementation, this would be replaced with the actual AI-generated content from your NestJS application using OpenAI.</p>
+                    <p>The explanation would include:
+                        <ul>
+                            <li>The verse's context within the larger biblical narrative</li>
+                            <li>Key words or concepts and their meanings</li>
+                            <li>Theological teachings or principles</li>
+                            <li>${depth === 'academic' ? 'Scholarly analysis and original language insights' : ''}</li>
+                            <li>${style === 'practical' ? 'Practical applications for daily life' : ''}</li>
+                        </ul>
+                    </p>
+                    `;
+                });
+                
+                // Display explanations
+                const container = document.getElementById('explanationsContainer');
+                container.innerHTML = '';
+                
+                Object.entries(mockExplanations).forEach(([verse, explanation]) => {
+                    const explanationDiv = document.createElement('div');
+                    explanationDiv.className = 'explanation-container mb-4';
+                    explanationDiv.innerHTML = explanation;
+                    container.appendChild(explanationDiv);
+                });
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to generate explanation: ' + error.message);
+            } finally {
+                // Hide spinner
+                document.getElementById('spinner').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

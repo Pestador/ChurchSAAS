@@ -35,15 +35,11 @@ export class GenerateSermonDto {
   style?: SermonStyle;
 
   @IsOptional()
-  @IsEnum(SermonDenomination, {
-    message: 'Denomination must be one of: nondenominational, baptist, catholic, methodist, lutheran, presbyterian, pentecostal, anglican, orthodox'
-  })
+  @IsEnum(SermonDenomination)
   denomination?: SermonDenomination;
 
   @IsOptional()
-  @IsEnum(SermonTheologicalFramework, {
-    message: 'Theological framework must be one of: evangelical, reformed, armenian, liberation, progressive, traditional'
-  })
+  @IsEnum(SermonTheologicalFramework)
   theologicalFramework?: SermonTheologicalFramework;
 
   @IsOptional()

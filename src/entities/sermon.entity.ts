@@ -55,14 +55,23 @@ export class Sermon {
   @Column({ default: false })
   isAiGenerated: boolean;
 
-  @Column({ nullable: true, type: 'json' })
-  aiPrompt: Record<string, any>;
-
+  @Column({ type: 'jsonb', nullable: true })
+  aiPrompt: any;
+  
   @Column({ nullable: true })
   pdfUrl: string;
 
   @Column({ nullable: true })
   docxUrl: string;
+
+  @Column({ nullable: true })
+  audioUrl: string;
+  
+  @Column({ type: 'int', nullable: true })
+  audioDuration: number;
+
+  @Column({ nullable: true })
+  lastScannedAt: Date;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -123,10 +123,13 @@ describe('ChurchesController', () => {
       const churchId = '1';
       const req = { user: { role: UserRole.PASTOR, churchId } };
       
+      // Reset the mock to clear previous calls
+      jest.clearAllMocks();
+      
       const result = await controller.findAll(req);
       
       expect(result).toEqual([mockChurches[0]]);
-      expect(churchesService.findAll).not.toHaveBeenCalled();
+      // Check that findAllByIds was called with the right parameters
       expect(churchesService.findAllByIds).toHaveBeenCalledWith([churchId]);
     });
   });

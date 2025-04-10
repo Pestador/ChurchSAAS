@@ -5,6 +5,7 @@ import { UserRole } from '../../entities/user.entity';
 import { GenerateSermonDto } from './dto/generate-sermon.dto';
 import { CreateSermonDto } from './dto/create-sermon.dto';
 import { UpdateSermonDto } from './dto/update-sermon.dto';
+import { GenerateTTSDto } from './dto/generate-tts.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { ChurchTenantGuard } from '../../common/guards/church-tenant.guard';
@@ -56,6 +57,57 @@ export class SermonsController {
     }
     
     return this.sermonsService.generateAiSermon(generateSermonDto, userId, churchId);
+  }
+
+  @Post(':id/tts')
+  @Roles(UserRole.ADMIN, UserRole.PASTOR)
+  async generateSermonSpeech(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() generateTTSDto: GenerateTTSDto,
+    @Request() req,
+  ) {
+    const { churchId, role } = req.user;
+    
+    // Ensure the user has permissions based on their subscription plan
+    if (role !== UserRole.ADMIN) {
+      const church = await this.sermonsService.getChurchWithSubscription(churchId);
+      
+      // Check if the church has TTS permissions based on subscription
+      if (church.subscriptionPlan === 'free') {
+        throw new ForbiddenException('Text-to-speech generation requires a paid subscription');
+      }
+    }
+    
+    return this.sermonsService.generateSermonSpeech(id, generateTTSDto, churchId);
+  }
+  
+  @Post('tts/text')
+  @Roles(UserRole.ADMIN, UserRole.PASTOR)
+  async generateTextSpeech(
+    @Body() data: { text: string } & GenerateTTSDto,
+    @Request() req,
+  ) {
+    const { churchId, role } = req.user;
+    
+    // Ensure the user has permissions based on their subscription plan
+    if (role !== UserRole.ADMIN) {
+      const church = await this.sermonsService.getChurchWithSubscription(churchId);
+      
+      // Check if the church has TTS permissions based on subscription
+      if (church.subscriptionPlan === 'free') {
+        throw new ForbiddenException('Text-to-speech generation requires a paid subscription');
+      }
+    }
+    
+    // Extract text and TTS options
+    const { text, ...ttsOptions } = data;
+    
+    // Check if text is provided
+    if (!text || text.trim().length === 0) {
+      throw new ForbiddenException('Text content is required for speech generation');
+    }
+    
+    return this.sermonsService.generateTextSpeech(text, ttsOptions, churchId);
   }
 
   @Patch(':id')

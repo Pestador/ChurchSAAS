@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Church SaaS Platform - Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3a5a97;
+            --secondary-color: #6c757d;
+            --accent-color: #f8b739;
+            --light-bg: #f8f9fa;
+            --dark-bg: #343a40;
+        }
+
+        body {
+            padding-top: 56px;
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background-color: var(--primary-color) !important;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: white !important;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+        }
+
+        .hero-section {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .feature-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card .card-body {
+            padding: 1.5rem;
+        }
+
+        .stats-card {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .stats-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stats-label {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        .activity-feed {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .activity-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .footer {
+            background-color: var(--dark-bg);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        .footer a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: white;
+        }
+
+        .footer-heading {
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .auth-button {
+            background-color: white;
+            color: var(--primary-color);
+            border: none;
+            font-weight: 500;
+        }
+
+        .auth-button:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: var(--primary-color);
+        }
+
+        .demo-badge {
+            position: fixed;
+            top: 70px;
+            right: 10px;
+            z-index: 1000;
+            background-color: var(--accent-color);
+            color: var(--dark-bg);
+            font-weight: bold;
+        }
+
+        .quick-actions {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="bi bi-church me-2"></i>
+                ChurchSaaS
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">
+                            <i class="bi bi-house-door"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="test-client.html">
+                            <i class="bi bi-book"></i> Bible Study
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="tts-test.html">
+                            <i class="bi bi-soundwave"></i> Text-to-Speech
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="moderation-test.html">
+                            <i class="bi bi-shield-check"></i> Content Moderation
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <div class="dropdown me-3">
+                        <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" id="churchDropdown" data-bs-toggle="dropdown">
+                            <i class="bi bi-building"></i> First Baptist
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="churchDropdown">
+                            <li><a class="dropdown-item" href="#">First Baptist</a></li>
+                            <li><a class="dropdown-item" href="#">Grace Community</a></li>
+                            <li><a class="dropdown-item" href="#">New Life Church</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">Manage Churches</a></li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-sm auth-button me-2">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </button>
+                    <button class="btn btn-sm auth-button">
+                        <i class="bi bi-person-plus"></i> Sign Up
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Demo Mode Badge -->
+    <div class="badge demo-badge">
+        <i class="bi bi-laptop"></i> Demo Mode
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1>Empower Your Ministry with AI</h1>
+                    <p class="lead">All-in-one platform for sermon creation, member engagement, and church management.</p>
+                    <div class="mt-4">
+                        <button class="btn btn-light me-2">
+                            <i class="bi bi-play-circle"></i> Watch Demo
+                        </button>
+                        <button class="btn btn-outline-light">
+                            <i class="bi bi-calendar-check"></i> Schedule a Tour
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-6 d-none d-lg-block text-center">
+                    <img src="https://via.placeholder.com/500x300?text=Church+SaaS+Platform" alt="Church SaaS Platform" class="img-fluid rounded">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Cards Section -->
+    <div class="container mb-5">
+        <h2 class="text-center mb-4">Powerful Tools for Your Church</h2>
+        <div class="row g-4">
+            <!-- Sermon Generation -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card feature-card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-mic"></i>
+                        </div>
+                        <h5 class="card-title">AI Sermon Generation</h5>
+                        <p class="card-text">Create engaging, scripture-based sermons with our AI-powered generator.</p>
+                        <a href="#" class="btn btn-primary">Try Now</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Bible Study -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card feature-card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-book"></i>
+                        </div>
+                        <h5 class="card-title">Bible Study Tools</h5>
+                        <p class="card-text">Create interactive Bible studies with AI-powered insights and discussion.</p>
+                        <a href="test-client.html" class="btn btn-primary">Try Now</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Text to Speech -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card feature-card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-soundwave"></i>
+                        </div>
+                        <h5 class="card-title">Text-to-Speech</h5>
+                        <p class="card-text">Convert your sermons to natural-sounding audio for podcasts and accessibility.</p>
+                        <a href="tts-test.html" class="btn btn-primary">Try Now</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Prayer Requests -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card feature-card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-chat-heart"></i>
+                        </div>
+                        <h5 class="card-title">Prayer Requests</h5>
+                        <p class="card-text">Manage prayer requests from your congregation with smart organization.</p>
+                        <a href="#" class="btn btn-primary">Try Now</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Content Moderation -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card feature-card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <h5 class="card-title">Content Moderation</h5>
+                        <p class="card-text">Ensure appropriate content with AI-powered content moderation tools.</p>
+                        <a href="moderation-test.html" class="btn btn-primary">Try Now</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Church Management -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card feature-card">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <h5 class="card-title">Church Management</h5>
+                        <p class="card-text">Streamline administration with easy-to-use management tools.</p>
+                        <a href="#" class="btn btn-primary">Try Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Preview Section -->
+    <div class="container mb-5">
+        <div class="row">
+            <!-- Stats -->
+            <div class="col-lg-4">
+                <h3 class="mb-4">Quick Stats</h3>
+                <div class="stats-card">
+                    <div class="stats-value">127</div>
+                    <div class="stats-label">ACTIVE SERMONS</div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-value">43</div>
+                    <div class="stats-label">PRAYER REQUESTS</div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-value">285</div>
+                    <div class="stats-label">CHURCH MEMBERS</div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-value">12</div>
+                    <div class="stats-label">UPCOMING EVENTS</div>
+                </div>
+            </div>
+            
+            <!-- Activity Feed -->
+            <div class="col-lg-8">
+                <h3 class="mb-4">Recent Activity</h3>
+                <div class="activity-feed">
+                    <div class="activity-item d-flex align-items-center">
+                        <div class="activity-icon bg-primary text-white">
+                            <i class="bi bi-mic"></i>
+                        </div>
+                        <div>
+                            <strong>New Sermon Added</strong>
+                            <p class="mb-0 text-muted small">Pastor John added "Finding Peace in Troubled Times" - 25 minutes ago</p>
+                        </div>
+                    </div>
+                    <div class="activity-item d-flex align-items-center">
+                        <div class="activity-icon bg-success text-white">
+                            <i class="bi bi-chat-heart"></i>
+                        </div>
+                        <div>
+                            <strong>Prayer Request</strong>
+                            <p class="mb-0 text-muted small">Jane Doe submitted a prayer request - 2 hours ago</p>
+                        </div>
+                    </div>
+                    <div class="activity-item d-flex align-items-center">
+                        <div class="activity-icon bg-warning text-dark">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <div>
+                            <strong>Content Flagged</strong>
+                            <p class="mb-0 text-muted small">A prayer request was flagged for review - 3 hours ago</p>
+                        </div>
+                    </div>
+                    <div class="activity-item d-flex align-items-center">
+                        <div class="activity-icon bg-info text-white">
+                            <i class="bi bi-soundwave"></i>
+                        </div>
+                        <div>
+                            <strong>Audio Generated</strong>
+                            <p class="mb-0 text-muted small">Text-to-speech conversion completed for Sunday sermon - 5 hours ago</p>
+                        </div>
+                    </div>
+                    <div class="activity-item d-flex align-items-center">
+                        <div class="activity-icon bg-secondary text-white">
+                            <i class="bi bi-person-plus"></i>
+                        </div>
+                        <div>
+                            <strong>New Member</strong>
+                            <p class="mb-0 text-muted small">Sarah Johnson joined First Baptist Church - 1 day ago</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions Button -->
+    <div class="quick-actions">
+        <div class="dropdown">
+            <button class="btn btn-primary rounded-circle p-3" type="button" id="quickActions" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-plus-lg"></i>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="quickActions">
+                <li><a class="dropdown-item" href="#"><i class="bi bi-mic me-2"></i> New Sermon</a></li>
+                <li><a class="dropdown-item" href="#"><i class="bi bi-chat-heart me-2"></i> Prayer Request</a></li>
+                <li><a class="dropdown-item" href="#"><i class="bi bi-calendar-plus me-2"></i> Add Event</a></li>
+                <li><a class="dropdown-item" href="#"><i class="bi bi-person-plus me-2"></i> New Member</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 mb-4 mb-md-0">
+                    <h5 class="footer-heading">ChurchSaaS</h5>
+                    <p class="small">The all-in-one platform for churches to engage their congregation with modern tools powered by AI.</p>
+                </div>
+                <div class="col-md-3 mb-4 mb-md-0">
+                    <h5 class="footer-heading">Features</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Sermon Generation</a></li>
+                        <li><a href="#">Bible Study Tools</a></li>
+                        <li><a href="#">Text-to-Speech</a></li>
+                        <li><a href="#">Prayer Requests</a></li>
+                        <li><a href="#">Content Moderation</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4 mb-md-0">
+                    <h5 class="footer-heading">Resources</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">API Reference</a></li>
+                        <li><a href="#">Tutorials</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Community</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="footer-heading">Support</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="mt-4 mb-4" style="border-color: rgba(255,255,255,0.1);">
+            <div class="row">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <p class="small mb-0">&copy; 2025 ChurchSaaS Platform. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="me-3"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="me-3"><i class="bi bi-twitter"></i></a>
+                    <a href="#" class="me-3"><i class="bi bi-instagram"></i></a>
+                    <a href="#"><i class="bi bi-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap and custom JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Demo mode functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if demo mode is enabled (default to true for now)
+            const demoMode = localStorage.getItem('demoMode') !== 'false';
+            
+            // Toggle demo mode badge visibility
+            const demoBadge = document.querySelector('.demo-badge');
+            demoBadge.style.display = demoMode ? 'block' : 'none';
+            
+            // Function to toggle demo mode
+            window.toggleDemoMode = function() {
+                const newMode = localStorage.getItem('demoMode') !== 'true';
+                localStorage.setItem('demoMode', newMode);
+                location.reload();
+            };
+            
+            // Fake login functionality for demo
+            const loginBtn = document.querySelector('.auth-button');
+            if (loginBtn) {
+                loginBtn.addEventListener('click', function() {
+                    alert('This is a demo. In a real application, this would open a login form.');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
